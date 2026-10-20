@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13233A">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>PPL Ground School</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sectional chart world. Chart paper ground, navy ink, magenta and airspace blue as the two chart colors; topic codes set like airport identifiers. Bottom tab bar on phones, side rail on wide screens. */
+:root{
+  --paper:#EEF2F3; --panel:#FFFFFF; --sunk:#E3E9EC; --ink:#13233A; --ink2:#4A5A6E; --line:#C9D3DA;
+  --magenta:#A3245F; --magenta-soft:#F3DDE8; --blue:#1C5BA3; --blue-soft:#DCE8F5;
+  --good:#1E7A4C; --good-soft:#DCEFE4; --warn:#B07A00; --warn-soft:#F6ECCF; --bad:#B3261E; --bad-soft:#F7DEDC;
+  --terrain:#D6E6C8;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px; --shadow:0 1px 2px rgba(19,35,58,.06),0 4px 14px rgba(19,35,58,.06);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0D1624; --panel:#142033; --sunk:#0A121E; --ink:#E4EAF1; --ink2:#9AA9BB; --line:#26364D;
+  --magenta:#E06BA2; --magenta-soft:#3A1D2D; --blue:#74A9E6; --blue-soft:#17304F;
+  --good:#5BC48D; --good-soft:#123327; --warn:#E3B54A; --warn-soft:#3A2F12; --bad:#F07A72; --bad-soft:#3E1B1A;
+  --terrain:#1E3324; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0D1624; --panel:#142033; --sunk:#0A121E; --ink:#E4EAF1; --ink2:#9AA9BB; --line:#26364D;
+  --magenta:#E06BA2; --magenta-soft:#3A1D2D; --blue:#74A9E6; --blue-soft:#17304F;
+  --good:#5BC48D; --good-soft:#123327; --warn:#E3B54A; --warn-soft:#3A2F12; --bad:#F07A72; --bad-soft:#3E1B1A;
+  --terrain:#1E3324; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--paper)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+.app{display:flex;min-height:100%}
+.rail{display:none}
+.main{flex:1;min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px calc(84px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);display:flex;align-items:center;gap:10px;padding-block:8px;margin-inline:-4px}
+.brand{font:700 22px/1 var(--f-display);letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.brand .dot{width:12px;height:12px;border-radius:50%;border:3px solid var(--magenta);box-shadow:0 0 0 2px var(--paper),0 0 0 3px var(--magenta)}
+.topbar .sp{flex:1}
+.sync{font:500 12px/1 var(--f-body);color:var(--ink2);display:flex;align-items:center;gap:6px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--ink2);display:inline-block}
+.sync.cloud i{background:var(--good)}
+.back{border:0;background:none;padding:6px 8px 6px 0;color:var(--blue);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--panel);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;font:600 11px/1 var(--f-body);color:var(--ink2);cursor:pointer;border-radius:8px}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--magenta)}
+@media (min-width:960px){
+  .tabs{display:none}
+  .rail{display:flex;flex-direction:column;gap:4px;width:220px;flex:none;position:sticky;top:0;height:100vh;padding:20px 14px;border-right:1px solid var(--line);background:var(--panel)}
+  .rail .brand{margin:4px 8px 18px}
+  .rail .tab{flex-direction:row;justify-content:flex-start;gap:12px;font-size:15px;padding:10px 12px}
+  .rail .tab[aria-current="page"]{background:var(--magenta-soft)}
+  .main{padding-bottom:40px}
+  .topbar .brand{display:none}
+}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.eyebrow{font:600 13px/1 var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.h1{font:700 34px/1.05 var(--f-display);letter-spacing:.01em;text-transform:uppercase}
+.h2{font:700 22px/1.1 var(--f-display);letter-spacing:.03em;text-transform:uppercase}
+.muted{color:var(--ink2)}
+.small{font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:10px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:10px 16px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px;justify-content:center;min-height:44px;text-align:center}
+.btn.primary{background:var(--magenta);border-color:var(--magenta);color:#fff}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+:root[data-theme="dark"] .btn.primary,:root[data-theme="dark"] .btn.blue{color:#0D1624}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary,:root:not([data-theme="light"]) .btn.blue{color:#0D1624}}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+.ident{font:700 13px/1 var(--f-display);letter-spacing:.08em;border:1.5px solid currentColor;border-radius:4px;padding:4px 5px 3px;color:var(--blue);display:inline-block;min-width:42px;text-align:center}
+.ident.m{color:var(--magenta)}
+.chip{font:500 12px/1 var(--f-mono);background:var(--sunk);color:var(--ink2);border-radius:6px;padding:5px 7px;display:inline-block}
+.chip.fig{font-family:var(--f-body);font-weight:600;background:var(--blue-soft);color:var(--blue);border:0;cursor:pointer;padding:7px 10px;border-radius:999px}
+.chip.off{background:var(--magenta-soft);color:var(--magenta);font-family:var(--f-body);font-weight:600}
+.bar{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden;position:relative}
+.bar > b{position:absolute;inset:0 auto 0 0;background:var(--blue);border-radius:99px}
+.bar > b.m{background:var(--good)}
+.num{font-variant-numeric:tabular-nums}
+/* Home */
+.hero{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:640px){.hero{grid-template-columns:240px minmax(0,1fr);align-items:center}}
+.gauge{width:100%;max-width:260px;margin:0 auto;display:block}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{background:var(--sunk);border-radius:8px;padding:10px 12px}
+.stat b{display:block;font:700 26px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--ink2)}
+.topic{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%}
+.topic:last-child{border-bottom:0}
+.topic .t{font-weight:600}
+.topic .pct{font:700 20px/1 var(--f-display);font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+.activity{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:48px}
+.activity i{display:block;background:var(--blue);border-radius:2px;min-height:2px;opacity:.85}
+.activity i.z{background:var(--line)}
+/* Questions */
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.progress{height:4px;background:var(--sunk);border-radius:99px;overflow:hidden}
+.progress b{display:block;height:100%;background:var(--magenta)}
+.stem{font-size:18px;line-height:1.5;font-weight:500}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start;text-align:left;border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:12px;cursor:pointer;min-height:54px}
+.opt .k{font:700 18px/34px var(--f-display);width:34px;height:34px;border-radius:50%;background:var(--sunk);text-align:center}
+.opt span:last-child{padding-top:5px}
+.opt.sel{border-color:var(--blue);background:var(--blue-soft)}
+.opt.sel .k{background:var(--blue);color:var(--panel)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .k{background:var(--good);color:var(--panel)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);color:var(--panel)}
+.opt[disabled]{cursor:default}
+.explain{border-left:4px solid var(--good);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.explain.bad{border-left-color:var(--bad)}
+.explain h4{font:700 18px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.flag{border:0;background:none;cursor:pointer;color:var(--ink2);display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;padding:8px 0}
+.flag.on{color:var(--warn)}
+.sticky-cta{position:sticky;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;gap:10px}
+@media (min-width:960px){.sticky-cta{bottom:16px}}
+/* Lessons */
+.lesson{font-size:16.5px;line-height:1.65;max-width:68ch}
+.lesson h3{font:700 22px/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.03em;margin:22px 0 8px;color:var(--blue)}
+.lesson h4{font-weight:700;margin:16px 0 4px}
+.lesson p{margin:0 0 12px}
+.lesson ul,.lesson ol{margin:0 0 12px;padding-left:22px}
+.lesson li{margin:3px 0}
+.lesson blockquote{margin:12px 0;padding:10px 14px;border-left:4px solid var(--magenta);background:var(--magenta-soft);border-radius:0 8px 8px 0}
+.lesson code{font:500 14px var(--f-mono);background:var(--sunk);padding:1px 5px;border-radius:4px}
+.tbl{overflow-x:auto;margin:6px 0 14px;border:1px solid var(--line);border-radius:8px}
+.lesson table,.kf{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+.lesson th,.lesson td,.kf th,.kf td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.lesson th,.kf th{background:var(--sunk);font-weight:700}
+.lesson tr:last-child td,.kf tr:last-child td{border-bottom:0}
+.kf td:first-child{font-weight:600;width:42%}
+.callout{border-radius:10px;padding:14px 16px}
+.callout.trap{background:var(--bad-soft)}
+.callout.aid{background:var(--good-soft)}
+.callout h4{font:700 16px/1 var(--f-display);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.callout ul{margin:0;padding-left:20px}
+.list-item{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--line);background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;cursor:pointer}
+.list-item:last-child{border-bottom:0}
+.check{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.check.on{background:var(--good);border-color:var(--good);color:var(--panel)}
+/* Segmented */
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 13px;font-weight:600;font-size:14px;cursor:pointer}
+.seg button[aria-pressed="true"]{border-color:var(--magenta);background:var(--magenta-soft);color:var(--magenta)}
+label.lbl{font:600 13px/1 var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink2)}
+input[type=search]{width:100%;font:inherit;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink)}
+/* Exam */
+.timer{font:700 22px/1 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.timer.low{color:var(--bad)}
+.navgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px}
+.navgrid button{height:40px;border-radius:6px;border:1.5px solid var(--line);background:var(--panel);font:600 14px var(--f-body);cursor:pointer;font-variant-numeric:tabular-nums;position:relative}
+.navgrid button.ans{background:var(--blue-soft);border-color:var(--blue)}
+.navgrid button.cur{outline:2px solid var(--magenta);outline-offset:1px}
+.navgrid button.flg::after{content:"";position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.navgrid button.ok{background:var(--good-soft);border-color:var(--good)}
+.navgrid button.no{background:var(--bad-soft);border-color:var(--bad)}
+.report{font-family:var(--f-mono);font-size:13px}
+.report td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.verdict{font:700 44px/1 var(--f-display);letter-spacing:.02em}
+.verdict.pass{color:var(--good)}.verdict.fail{color:var(--bad)}
+/* Figures */
+.figgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.figcard{border:1px solid var(--line);background:var(--panel);border-radius:10px;overflow:hidden;cursor:pointer;padding:0;text-align:left;display:flex;flex-direction:column}
+.figcard img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:top;background:var(--sunk);display:block}
+.figcard div{padding:8px 10px 10px;font-size:13px;line-height:1.3}
+.figcard b{font:700 15px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;display:block}
+.viewer{position:fixed;inset:0;z-index:50;background:rgba(8,14,24,.96);display:flex;flex-direction:column;color:#E4EAF1}
+.viewer .vbar{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px))}
+.viewer .vbar b{font:700 18px/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;flex:1;min-width:0}
+.viewer .vbtn{width:42px;height:42px;border-radius:50%;border:1px solid #3A4A60;background:#142033;color:#E4EAF1;cursor:pointer;font-size:20px;line-height:1;display:grid;place-items:center}
+.stage{flex:1;overflow:hidden;position:relative;touch-action:none;cursor:grab}
+.stage img{position:absolute;left:0;top:0;transform-origin:0 0;user-select:none;-webkit-user-drag:none;max-width:none;background:#fff}
+.vhint{text-align:center;font-size:12px;color:#9AA9BB;padding:6px 12px calc(10px + env(safe-area-inset-bottom,0px))}
+/* Flashcards */
+.flash{min-height:260px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:14px;cursor:pointer;padding:28px 20px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}
+.flash .front{font:700 28px/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.flash .backtxt{font-size:19px;line-height:1.5}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:60}
+.empty{padding:26px 16px;text-align:center;color:var(--ink2)}
+.loading{padding:60px 16px;text-align:center;color:var(--ink2)}
+.confirm{border:1.5px solid var(--bad);background:var(--bad-soft);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
+@media (prefers-reduced-motion:no-preference){.opt,.btn,.seg button{transition:background .15s,border-color .15s}}
+</style>
+
+<div class="app">
+  <nav class="rail" id="rail" aria-label="Sections"></nav>
+  <main class="main"><div class="wrap" id="view"><div class="loading">Loading the question bank</div></div></main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Sections"></nav>
+<div id="overlay"></div>
+
+<script>
+(function(){
+"use strict";
+/* ============ Constants ============ */
+const TOPICS=[
+ {id:"regs",code:"REG",name:"Regulations",exam:10},
+ {id:"airspace",code:"ASP",name:"Airspace and Sectionals",exam:7},
+ {id:"wxtheory",code:"WXT",name:"Weather Theory",exam:6},
+ {id:"wxservices",code:"WXS",name:"Weather Services",exam:6},
+ {id:"aero",code:"AER",name:"Aerodynamics and Performance",exam:7},
+ {id:"wb",code:"W/B",name:"Weight and Balance",exam:3},
+ {id:"systems",code:"SYS",name:"Systems and Instruments",exam:6},
+ {id:"nav",code:"NAV",name:"Navigation and Planning",exam:6},
+ {id:"airport",code:"APT",name:"Airport Operations",exam:5},
+ {id:"humanops",code:"HUM",name:"Human Factors and Maneuvers",exam:4},
+ {id:"c152",code:"152",name:"Cessna 152",exam:0},
+ {id:"home",code:"EDU",name:"KEDU Home Base",exam:0}
+];
+const EXAMT=TOPICS.filter(t=>t.exam>0);
+const SRC={bank:"FAA bank",sample:"FAA sample",original:"Original"};
+const srcOf=q=>q.source||(q.official?"sample":"original");
+const TOPIC=Object.fromEntries(TOPICS.map(t=>[t.id,t]));
+const INTERVALS=[0,1,3,7,16,35,75]; // days per Leitner box
+const PROB=[0.5,0.62,0.74,0.84,0.91,0.95,0.97];
+const UNSEEN_P=0.45, EXAM_N=60, EXAM_MIN=150, PASS=70;
+const DAY=86400000;
+const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/DAY);
+const dayKey=(d)=>{const x=new Date(d*DAY);return x.toISOString().slice(0,10)};
+
+/* ============ Data ============ */
+let Q=[],QI={},L=[],LI={},F=[],FI={},ACS={};
+async function loadData(){
+  const get=async p=>{const r=await fetch(p);if(!r.ok)throw new Error(p+" "+r.status);return r.json()};
+  const [q,l,f,a]=await Promise.all([get("data/questions.json"),get("data/lessons.json"),get("data/figures.json"),get("data/acs.json")]);
+  Q=q;L=l;F=f;ACS=a;
+  Q.forEach(x=>QI[x.id]=x);L.forEach(x=>LI[x.id]=x);F.forEach(x=>FI[x.id]=x);
+}
+
+/* ============ Progress store ============ */
+const LKEY="ppl.progress.v1";
+let P=blank(), store={mode:"local",ref:null,timer:null,err:false};
+function blank(){return {v:1,q:{},flags:{},read:{},exams:[],days:{},updatedAt:0,activeExam:null,log:[],tset:{}}}
+function readLocal(){try{const s=localStorage.getItem(LKEY);return s?JSON.parse(s):null}catch(e){return null}}
+function writeLocal(){try{localStorage.setItem(LKEY,JSON.stringify(P))}catch(e){}}
+function norm(o){const b=blank();return Object.assign(b,o||{})}
+async function initCloud(){
+  try{
+    if(!window.claude||!window.claude.use)return;
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user)return;
+    const id=await user.id(); if(!id)return;
+    const ref=db.doc("data/users/"+id+"/progress");
+    const snap=await ref.get();
+    const remote=snap.exists?norm(JSON.parse(JSON.stringify(snap.data()))):null;
+    store.ref=ref;store.mode="cloud";
+    if(remote&&remote.updatedAt>P.updatedAt){P=remote;writeLocal();}
+    else if(P.updatedAt>0){pushCloud();}
+    render();
+  }catch(e){store.err=true}
+}
+function pushCloud(){
+  if(!store.ref)return;
+  clearTimeout(store.timer);
+  store.timer=setTimeout(async()=>{try{await store.ref.set(JSON.parse(JSON.stringify(P)));store.err=false}catch(e){store.err=true}},1200);
+}
+function save(){P.updatedAt=Date.now();writeLocal();pushCloud()}
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&store.ref){clearTimeout(store.timer);store.ref.set(JSON.parse(JSON.stringify(P))).catch(()=>{})}});
+
+/* rec: [box, dueDay, right, wrong, lastDay, lastCorrect] */
+function rec(id){return P.q[id]||null}
+function record(id,ok){
+  const r=P.q[id]||[0,0,0,0,0,0], t=today();
+  if(ok){r[0]=Math.min(r[0]+1,INTERVALS.length-1);r[2]++}else{r[0]=0;r[3]++}
+  r[1]=t+(ok?INTERVALS[r[0]]:1);r[4]=t;r[5]=ok?1:0;
+  P.q[id]=r;P.days[dayKey(t)]=(P.days[dayKey(t)]||0)+1;
+}
+function pOf(id){const r=rec(id);if(!r)return UNSEEN_P;return r[5]?PROB[r[0]]:Math.min(PROB[0],0.5)}
+function mastered(id){const r=rec(id);return r&&r[0]>=3&&r[5]}
+function isDue(id){const r=rec(id);return r&&r[1]<=today()}
+function topicQs(t){return Q.filter(q=>q.topic===t)}
+function topicStats(t){
+  const qs=topicQs(t);let seen=0,m=0,p=0;
+  qs.forEach(q=>{if(rec(q.id))seen++;if(mastered(q.id))m++;p+=pOf(q.id)});
+  return {n:qs.length,seen,m,p:qs.length?p/qs.length:0};
+}
+function predicted(){let s=0,w=0;EXAMT.forEach(t=>{const st=topicStats(t.id);if(st.n){s+=st.p*t.exam;w+=t.exam}});return w?Math.round(100*s/w):0}
+
+/* ============ Helpers ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pct=(a,b)=>b?Math.round(100*a/b):0;
+const ident=(t,m)=>`<span class="ident${m?" m":""}">${esc(TOPIC[t]?TOPIC[t].code:t)}</span>`;
+function toast(msg){const d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
+const ICON={
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/><path d="M12 5V3"/></svg>',
+ learn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3z"/><path d="M21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>',
+ practice:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>',
+ exam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M10 2h4"/></svg>',
+ train:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>',
+ figs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>',
+ flag:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>',
+ flagOn:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>'
+};
+const SECTIONS=[["home","Home"],["learn","Learn"],["practice","Practice"],["exam","Exam"],["train","Training"],["figs","Figures"]];
+
+/* ============ Router (in page state) ============ */
+let route={name:"home"}, hist=[];
+function go(name,params,replace){if(!replace)hist.push(route);route=Object.assign({name},params||{});render();window.scrollTo(0,0)}
+function back(){route=hist.pop()||{name:"home"};render();window.scrollTo(0,0)}
+function section(){const n=route.name;if(["learn","topic","lesson","cards"].includes(n))return"learn";if(["practice","session","results","search"].includes(n))return"practice";if(["exam","examrun","examresult"].includes(n))return"exam";if(n==="figs")return"figs";if(["train","flight","tsettings"].includes(n))return"train";return"home"}
+function nav(){
+  const cur=section();
+  const btns=SECTIONS.map(([k,l])=>`<button class="tab" data-sec="${k}" ${cur===k?'aria-current="page"':""}>${ICON[k]}<span>${l}</span></button>`).join("");
+  $("#tabs").innerHTML=btns;
+  $("#rail").innerHTML=`<div class="brand"><span class="dot"></span>PPL Ground School</div>`+btns;
+  document.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>{
+    if(P.activeExam&&route.name==="examrun"&&b.dataset.sec!=="exam"){/* exam keeps running */}
+    hist=[];route={name:b.dataset.sec==="exam"&&P.activeExam?"examrun":b.dataset.sec};render();window.scrollTo(0,0)});
+}
+function topbar(title,showBack){
+  const s=store.mode==="cloud"?`<span class="sync cloud"><i></i>Synced</span>`:`<span class="sync"><i></i>This device</span>`;
+  return `<div class="topbar">${showBack?`<button class="back" data-act="back">&#8249; Back</button>`:`<div class="brand"><span class="dot"></span>PPL Ground School</div>`}<div class="sp"></div>${s}</div>${title?`<div class="stack" style="gap:6px">${title}</div>`:""}`;
+}
+let examTick=null;
+function render(){
+  nav();
+  clearInterval(examTick);
+  if(route.name==="examrun"&&!P.activeExam)route={name:"exam"};
+  const v=$("#view");
+  const R={home:vHome,learn:vLearn,topic:vTopic,lesson:vLesson,cards:vCards,practice:vPractice,session:vSession,results:vResults,search:vSearch,exam:vExam,examrun:vExamRun,examresult:vExamResult,figs:vFigs,train:vTrain,flight:vFlight,tsettings:vTSettings}[route.name]||vHome;
+  v.innerHTML=R();
+  v.querySelectorAll('[data-act="back"]').forEach(b=>b.onclick=back);
+  v.querySelectorAll("[data-fig]").forEach(b=>b.onclick=e=>{e.stopPropagation();openFig(b.dataset.fig)});
+  if(R.after)R.after();
+  (bind[route.name]||(()=>{}))();
+}
+const bind={};
+
+/* ============ Gauge (airspeed indicator style) ============ */
+function gauge(val,cov){
+  const cx=120,cy=120,R=96;
+  const ang=v=>(-135+v*2.7)*Math.PI/180;
+  const pt=(v,r)=>[cx+r*Math.sin(ang(v)),cy-r*Math.cos(ang(v))];
+  const arc=(a,b,r)=>{const[x1,y1]=pt(a,r),[x2,y2]=pt(b,r);return`M${x1.toFixed(1)} ${y1.toFixed(1)}A${r} ${r} 0 ${(b-a)*2.7>180?1:0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`};
+  let ticks="";for(let v=0;v<=100;v+=5){const big=v%10===0;const[a,b]=pt(v,R-14),[c,d]=pt(v,R-(big?28:21));ticks+=`<line x1="${a.toFixed(1)}" y1="${b.toFixed(1)}" x2="${c.toFixed(1)}" y2="${d.toFixed(1)}" stroke="var(--ink)" stroke-width="${big?2.2:1.2}"/>`;if(v%20===0){const[tx,ty]=pt(v,R-42);ticks+=`<text x="${tx.toFixed(1)}" y="${(ty+5).toFixed(1)}" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="15" fill="var(--ink)">${v}</text>`}}
+  const [nx,ny]=pt(Math.max(0,Math.min(100,val)),R-18);
+  const col=val>=80?"var(--good)":val>=PASS?"var(--warn)":"var(--bad)";
+  return `<svg class="gauge" viewBox="0 0 240 240" role="img" aria-label="Predicted exam score ${val} percent">
+  <circle cx="120" cy="120" r="114" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>
+  <path d="${arc(0,PASS,R-7)}" stroke="var(--bad)" stroke-width="9" fill="none"/>
+  <path d="${arc(PASS,80,R-7)}" stroke="var(--warn)" stroke-width="9" fill="none"/>
+  <path d="${arc(80,100,R-7)}" stroke="var(--good)" stroke-width="9" fill="none"/>
+  <path d="${arc(0,Math.max(0.5,cov),R+8)}" stroke="var(--blue)" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
+  ${ticks}
+  <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="var(--magenta)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="${cx}" cy="${cy}" r="9" fill="var(--ink)"/>
+  <text x="120" y="172" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" font-size="40" fill="${col}">${val}%</text>
+  <text x="120" y="192" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="600" font-size="12" letter-spacing="1.5" fill="var(--ink2)">PREDICTED SCORE</text>
+  </svg>`;
+}
+
+/* ============ Views ============ */
+function vHome(){
+  const total=Q.length, seen=Q.filter(q=>rec(q.id)).length, m=Q.filter(q=>mastered(q.id)).length, due=Q.filter(q=>isDue(q.id)).length;
+  const pred=predicted(), cov=pct(seen,total);
+  const t=today();let act="";for(let i=13;i>=0;i--){const n=P.days[dayKey(t-i)]||0;act+=`<i class="${n?"":"z"}" style="height:${n?Math.max(10,Math.min(100,n*2.5)):4}%" title="${dayKey(t-i)}: ${n}"></i>`}
+  let streak=0;for(let i=0;i<400;i++){if(P.days[dayKey(t-i)])streak++;else if(i>0)break}
+  const ranked=EXAMT.map(x=>({...x,...topicStats(x.id)})).filter(x=>x.n);
+  const weak=ranked.slice().sort((a,b)=>a.p-b.p)[0];
+  const exams=P.exams.slice(-5);
+  const verdict=pred>=80?"On track for a strong pass.":pred>=PASS?"Above the 70 percent pass mark, keep building margin.":seen<40?"Answer your first questions and the gauge starts to move.":"Below the 70 percent pass mark for now. Work the weakest area below.";
+  return topbar("")+`
+  <section class="card hero">
+    ${gauge(pred,cov)}
+    <div class="stack" style="gap:12px">
+      <div><div class="eyebrow">FAA knowledge test PAR</div><div class="h1" style="margin-top:6px">Readiness</div><p class="muted" style="margin:6px 0 0">${verdict} The blue ring shows how much of the bank you have seen (${cov}%).</p></div>
+      <div class="stats">
+        <div class="stat"><b>${due}</b><span>due for review</span></div>
+        <div class="stat"><b>${m}<span style="font-size:16px;color:var(--ink2)"> / ${total}</span></b><span>mastered</span></div>
+        <div class="stat"><b>${streak}</b><span>day streak</span></div>
+        <div class="stat"><b>${exams.length?Math.max(...P.exams.map(e=>e.score))+"%":"none"}</b><span>best practice exam</span></div>
+      </div>
+    </div>
+  </section>
+  <div class="grid2">
+    <button class="btn primary wide" data-act="smart">${due?`Review ${due} due`:"Start a 20 question session"}</button>
+    <button class="btn blue wide" data-act="exam">Practice exam &middot; 60 Q &middot; 2:30</button>
+  </div>
+  ${weak&&seen>=20?`<section class="card row" style="justify-content:space-between"><div class="row" style="gap:12px">${ident(weak.id,1)}<div><div class="eyebrow">Weakest area</div><div style="font-weight:600">${esc(weak.name)} &middot; ${Math.round(weak.p*100)}% expected</div></div></div><button class="btn" data-drill="${weak.id}">Drill it</button></section>`:""}
+  <section class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 class="h2">Areas</h2><span class="small muted">expected score per area</span></div>
+    ${ranked.map(x=>`<button class="topic" data-topic="${x.id}">${ident(x.id)}<div class="stack" style="gap:6px;min-width:0"><div class="t">${esc(x.name)}</div><div class="bar"><b style="width:${pct(x.seen,x.n)}%;opacity:.35"></b><b class="m" style="width:${pct(x.m,x.n)}%"></b></div><div class="small muted num">${x.m} mastered &middot; ${x.seen} seen &middot; ${x.n} questions</div></div><div class="pct" style="color:${x.p>=.8?"var(--good)":x.p>=.7?"var(--warn)":"var(--bad)"}">${Math.round(x.p*100)}</div></button>`).join("")}
+  </section>
+  <section class="card stack">
+    <div class="row" style="justify-content:space-between"><h2 class="h2">Last 14 days</h2><span class="small muted num">${Object.values(P.days).reduce((a,b)=>a+b,0)} answers total</span></div>
+    <div class="activity" aria-hidden="true">${act}</div>
+  </section>
+  ${exams.length?`<section class="card"><h2 class="h2" style="margin-bottom:6px">Practice exams</h2>${exams.slice().reverse().map(e=>`<button class="list-item" data-exam="${e.id}"><div><div style="font-weight:600">${new Date(e.at).toLocaleDateString(undefined,{month:"short",day:"numeric"})} &middot; ${e.correct} of ${e.n}</div><div class="small muted">${Math.round(e.secs/60)} min &middot; ${e.missed.length} ACS codes missed</div></div><span class="verdict ${e.score>=PASS?"pass":"fail"}" style="font-size:26px">${e.score}%</span></button>`).join("")}</section>`:""}
+  ${settingsCard()}
+  <p class="small muted" style="text-align:center">${Q.filter(q=>srcOf(q)==="bank").length} real FAA bank questions, ${Q.filter(q=>srcOf(q)==="sample").length} FAA sample questions and ${Q.filter(q=>srcOf(q)==="original").length} original questions mapped to FAA-S-ACS-6C. Figures from the FAA testing supplement FAA-CT-8080-2H.</p>`;
+}
+function settingsCard(){
+  return `<section class="card stack" id="settings">
+   <h2 class="h2">Progress</h2>
+   <p class="small muted" style="margin:0">${store.mode==="cloud"?"Saved to your Claude account and synced across your devices.":"Saved in this browser on this device. Use export and import to move it."}${store.err?" Last sync attempt failed, it will retry with your next answer.":""}</p>
+   <div class="row">
+     <button class="btn" data-act="export">Copy progress code</button>
+     <button class="btn" data-act="import">Paste progress code</button>
+     <button class="btn ghost" data-act="reset" style="color:var(--bad)">Reset</button>
+   </div>
+   <div id="setx"></div>
+  </section>`;
+}
+bind.home=()=>{
+  const v=$("#view");
+  v.querySelector('[data-act="smart"]').onclick=()=>startSession({mode:"smart",n:20});
+  v.querySelector('[data-act="exam"]').onclick=()=>go("exam");
+  v.querySelectorAll("[data-topic]").forEach(b=>b.onclick=()=>go("topic",{topic:b.dataset.topic}));
+  v.querySelectorAll("[data-drill]").forEach(b=>b.onclick=()=>startSession({mode:"weak",topic:b.dataset.drill,n:20}));
+  v.querySelectorAll("[data-exam]").forEach(b=>b.onclick=()=>go("examresult",{id:b.dataset.exam}));
+  bindSettings();
+};
+function bindSettings(){
+  const box=$("#setx");if(!box)return;
+  $('[data-act="export"]').onclick=async()=>{const code=btoa(unescape(encodeURIComponent(JSON.stringify(P))));try{await navigator.clipboard.writeText(code);toast("Progress code copied")}catch(e){box.innerHTML=`<textarea readonly style="width:100%;height:90px;font:12px var(--f-mono)" id="exportcode">${esc(code)}</textarea><p class="small muted">Select all and copy.</p>`;$("#exportcode").select()}};
+  $('[data-act="import"]').onclick=()=>{box.innerHTML=`<textarea id="importcode" style="width:100%;height:90px;font:12px var(--f-mono)" placeholder="Paste the progress code here"></textarea><div class="row"><button class="btn primary" id="doimport">Import</button></div>`;$("#doimport").onclick=()=>{try{const o=JSON.parse(decodeURIComponent(escape(atob($("#importcode").value.trim()))));if(!o||!o.q)throw 0;P=norm(o);save();toast("Progress imported");render()}catch(e){box.insertAdjacentHTML("beforeend",`<p class="small" style="color:var(--bad)">That code could not be read. Copy the whole code and try again.</p>`)}}};
+  $('[data-act="reset"]').onclick=()=>{box.innerHTML=`<div class="confirm"><b>Erase all answers, exams and flags?</b><span class="small">This cannot be undone.</span><div class="row"><button class="btn" id="noreset">Keep my progress</button><button class="btn primary" id="yesreset" style="background:var(--bad);border-color:var(--bad)">Erase everything</button></div></div>`;$("#noreset").onclick=()=>box.innerHTML="";$("#yesreset").onclick=()=>{P=blank();save();toast("Progress erased");render()}};
+}
+
+/* Learn */
+function vLearn(){
+  return topbar(`<div class="eyebrow">Ground school</div><h1 class="h1">Learn</h1><p class="muted" style="margin:0">${L.length} lessons across ten areas, each linked to its questions.</p>`)+
+  `<section class="card">${TOPICS.filter(t=>t.exam>0||L.some(l=>l.topic===t.id)).map(t=>{const ls=L.filter(l=>l.topic===t.id);const rd=ls.filter(l=>P.read[l.id]).length;return `<button class="topic" data-topic="${t.id}">${ident(t.id)}<div class="stack" style="gap:6px;min-width:0"><div class="t">${esc(t.name)}</div><div class="bar"><b class="m" style="width:${pct(rd,ls.length)}%"></b></div><div class="small muted num">${rd} of ${ls.length} lessons studied &middot; ${topicQs(t.id).length} questions</div></div><span class="muted" aria-hidden="true">&#8250;</span></button>`}).join("")}</section>`;
+}
+bind.learn=()=>$("#view").querySelectorAll("[data-topic]").forEach(b=>b.onclick=()=>go("topic",{topic:b.dataset.topic}));
+function vTopic(){
+  const t=TOPIC[route.topic], ls=L.filter(l=>l.topic===t.id), st=topicStats(t.id);
+  return topbar(`<div class="row">${ident(t.id,1)}<span class="eyebrow">${st.n} questions &middot; ${Math.round(st.p*100)}% expected</span></div><h1 class="h1">${esc(t.name)}</h1>`,true)+
+  `<div class="grid2"><button class="btn primary" data-act="drill">Practice this area</button><button class="btn" data-act="cards">Flashcards</button></div>
+  <section class="card">${ls.map(l=>{const n=Q.filter(q=>q.lesson===l.id).length;return `<button class="list-item" data-lesson="${l.id}"><div class="row" style="gap:12px;flex-wrap:nowrap;min-width:0"><span class="check ${P.read[l.id]?"on":""}">${P.read[l.id]?"&#10003;":""}</span><div style="min-width:0"><div style="font-weight:600">${esc(l.title)}</div><div class="small muted">${l.minutes} min read &middot; ${n} questions</div></div></div><span class="muted" aria-hidden="true">&#8250;</span></button>`}).join("")||`<div class="empty">Lessons for this area are being written.</div>`}</section>`;
+}
+bind.topic=()=>{const v=$("#view");v.querySelector('[data-act="drill"]').onclick=()=>startSession({mode:"smart",topic:route.topic,n:20});v.querySelector('[data-act="cards"]').onclick=()=>go("cards",{topic:route.topic,i:0,flip:false});v.querySelectorAll("[data-lesson]").forEach(b=>b.onclick=()=>go("lesson",{id:b.dataset.lesson}))};
+function wrapTables(html){return html.replace(/<table/g,'<div class="tbl"><table').replace(/<\/table>/g,"</table></div>")}
+function figChips(ids){return (ids||[]).filter(id=>FI[id]).map(id=>`<button class="chip fig" data-fig="${id}">${esc(FI[id].label)} &middot; ${esc(FI[id].title)}</button>`).join(" ")}
+function vLesson(){
+  const l=LI[route.id];if(!l)return topbar("",true)+`<div class="empty">Lesson not found.</div>`;
+  const n=Q.filter(q=>q.lesson===l.id).length;
+  return topbar(`<div class="row">${ident(l.topic,1)}<span class="eyebrow">${l.minutes} min &middot; ${n} questions</span></div><h1 class="h1">${esc(l.title)}</h1><p class="muted" style="margin:0;font-size:17px">${esc(l.summary)}</p><div class="row" style="gap:6px">${(l.acs||[]).map(c=>`<span class="chip" title="${esc(ACS[c]||"")}">${esc(c)}</span>`).join("")}</div>`,true)+
+  `<article class="card lesson">${wrapTables(l.html)}</article>
+  ${l.keyFacts&&l.keyFacts.length?`<section class="card"><h2 class="h2" style="margin-bottom:8px">Key facts</h2><div class="tbl" style="margin:0"><table class="kf"><tbody>${l.keyFacts.map(k=>`<tr><td>${esc(k[0])}</td><td>${esc(k[1])}</td></tr>`).join("")}</tbody></table></div></section>`:""}
+  ${l.memoryAids&&l.memoryAids.length?`<section class="callout aid"><h4>Memory aids</h4><ul>${l.memoryAids.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`:""}
+  ${l.traps&&l.traps.length?`<section class="callout trap"><h4>Test traps</h4><ul>${l.traps.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></section>`:""}
+  ${l.figures&&l.figures.length?`<section class="stack"><span class="lbl">Study with</span><div class="row" style="gap:6px">${figChips(l.figures)}</div></section>`:""}
+  <div class="grid2"><button class="btn primary" data-act="prac" ${n?"":"disabled"}>Practice ${n} questions</button><button class="btn" data-act="read">${P.read[l.id]?"Studied &#10003;":"Mark as studied"}</button></div>
+  <button class="btn ghost" data-act="lcards">Flashcards for this lesson</button>`;
+}
+bind.lesson=()=>{const v=$("#view"),l=LI[route.id];if(!l)return;
+  v.querySelector('[data-act="prac"]').onclick=()=>{if(!P.read[l.id]){P.read[l.id]=Date.now();save()}startSession({mode:"lesson",lesson:l.id,n:999})};
+  v.querySelector('[data-act="read"]').onclick=()=>{if(P.read[l.id])delete P.read[l.id];else P.read[l.id]=Date.now();save();render()};
+  v.querySelector('[data-act="lcards"]').onclick=()=>go("cards",{lesson:l.id,i:0,flip:false});
+};
+function cardDeck(){const ls=route.lesson?[LI[route.lesson]]:L.filter(l=>l.topic===route.topic);const d=[];ls.forEach(l=>(l.keyFacts||[]).forEach(k=>d.push({l,k})));if(!route.order||route.order.length!==d.length)route.order=shuffle(d.map((_,i)=>i));return route.order.map(i=>d[i])}
+function vCards(){
+  const deck=cardDeck(), i=Math.min(route.i||0,Math.max(0,deck.length-1)), c=deck[i];
+  const head=route.lesson?LI[route.lesson].title:TOPIC[route.topic].name;
+  if(!c)return topbar(`<h1 class="h1">Flashcards</h1>`,true)+`<div class="empty">No key facts yet.</div>`;
+  return topbar(`<div class="eyebrow">Flashcards &middot; ${i+1} of ${deck.length}</div><h1 class="h1">${esc(head)}</h1>`,true)+
+  `<div class="progress"><b style="width:${pct(i+1,deck.length)}%"></b></div>
+  <button class="flash" data-act="flip" aria-live="polite">${route.flip?`<span class="eyebrow">${esc(c.k[0])}</span><span class="backtxt">${esc(c.k[1])}</span>`:`<span class="front">${esc(c.k[0])}</span><span class="small muted">Tap to reveal</span>`}</button>
+  <p class="small muted" style="margin:0">From: ${esc(c.l.title)}</p>
+  <div class="grid2"><button class="btn" data-act="prev" ${i?"":"disabled"}>Previous</button><button class="btn primary" data-act="next">${i+1<deck.length?"Next card":"Shuffle again"}</button></div>`;
+}
+bind.cards=()=>{const v=$("#view"),deck=cardDeck();
+  const f=v.querySelector('[data-act="flip"]');if(f)f.onclick=()=>{route.flip=!route.flip;render()};
+  const p=v.querySelector('[data-act="prev"]');if(p)p.onclick=()=>{route.i--;route.flip=false;render()};
+  const n=v.querySelector('[data-act="next"]');if(n)n.onclick=()=>{if(route.i+1<deck.length)route.i++;else{route.i=0;route.order=null}route.flip=false;render()};
+};
+
+/* Practice */
+let pset={topic:"all",mode:"smart",n:20,src:"all"};
+const MODES=[["smart","Smart mix"],["new","New only"],["missed","Missed before"],["flagged","Flagged"],["figures","Figure questions"],["official","FAA official 61"]];
+function pool(o){
+  let qs=Q.slice();
+  if(o.topic&&o.topic!=="all")qs=qs.filter(q=>q.topic===o.topic);
+  if(o.src&&o.src!=="all")qs=qs.filter(q=>o.src==="faa"?srcOf(q)!=="original":srcOf(q)==="original");
+  if(o.lesson)qs=qs.filter(q=>q.lesson===o.lesson);
+  if(o.ids)qs=o.ids.map(id=>QI[id]).filter(Boolean);
+  switch(o.mode){
+    case"new":qs=qs.filter(q=>!rec(q.id));break;
+    case"missed":qs=qs.filter(q=>{const r=rec(q.id);return r&&r[3]>0});break;
+    case"flagged":qs=qs.filter(q=>P.flags[q.id]);break;
+    case"figures":qs=qs.filter(q=>q.figures&&q.figures.length);break;
+    case"official":qs=qs.filter(q=>q.official);break;
+  }
+  return qs;
+}
+function pickSmart(qs,n){
+  const t=today();
+  const due=shuffle(qs.filter(q=>{const r=rec(q.id);return r&&r[1]<=t})).sort((a,b)=>rec(a.id)[0]-rec(b.id)[0]);
+  const fresh=shuffle(qs.filter(q=>!rec(q.id)));
+  const rest=shuffle(qs.filter(q=>{const r=rec(q.id);return r&&r[1]>t})).sort((a,b)=>pOf(a.id)-pOf(b.id));
+  // interleave: due first, then fresh mixed with weak ones
+  const out=due.slice(0,n);let i=0,j=0;
+  while(out.length<n&&(i<fresh.length||j<rest.length)){if(i<fresh.length&&(out.length%4!==3||j>=rest.length))out.push(fresh[i++]);else out.push(rest[j++])}
+  return out;
+}
+function startSession(o){
+  let qs=pool(o);
+  if(o.mode==="smart"||o.mode==="weak")qs=pickSmart(qs,o.n);
+  else if(o.mode==="lesson")qs=shuffle(qs);
+  else qs=shuffle(qs).slice(0,o.n);
+  if(!qs.length){toast("No questions match that choice yet");return}
+  go("session",{ids:qs.map(q=>q.id),i:0,ans:{},requeued:{},title:o.title||(o.lesson?LI[o.lesson].title:o.topic&&o.topic!=="all"?TOPIC[o.topic].name:"Mixed practice")});
+}
+function vPractice(){
+  const counts=Object.fromEntries(MODES.map(([k])=>[k,pool({topic:pset.topic,mode:k,src:pset.src}).length]));
+  return topbar(`<div class="eyebrow">Question bank &middot; ${Q.length} questions</div><h1 class="h1">Practice</h1>`)+
+  `<section class="card stack" style="gap:14px">
+    <div class="stack" style="gap:8px"><span class="lbl">Area</span><div class="seg" id="seg-topic"><button data-v="all" aria-pressed="${pset.topic==="all"}">All areas</button>${TOPICS.map(t=>`<button data-v="${t.id}" aria-pressed="${pset.topic===t.id}">${esc(t.name)}</button>`).join("")}</div></div>
+    <div class="stack" style="gap:8px"><span class="lbl">Source</span><div class="seg" id="seg-src">${[["all","All"],["faa","Real FAA questions"],["orig","Original"]].map(([k,l])=>`<button data-v="${k}" aria-pressed="${pset.src===k}">${l}</button>`).join("")}</div></div>
+    <div class="stack" style="gap:8px"><span class="lbl">Questions</span><div class="seg" id="seg-mode">${MODES.map(([k,l])=>`<button data-v="${k}" aria-pressed="${pset.mode===k}">${l} <span class="muted num">${counts[k]}</span></button>`).join("")}</div></div>
+    <div class="stack" style="gap:8px"><span class="lbl">Session length</span><div class="seg" id="seg-n">${[10,20,40].map(n=>`<button data-v="${n}" aria-pressed="${pset.n===n}">${n}</button>`).join("")}</div></div>
+    <button class="btn primary wide" data-act="start" ${counts[pset.mode]?"":"disabled"}>Start ${Math.min(pset.n,counts[pset.mode])} questions</button>
+  </section>
+  <button class="btn wide" data-act="search">Search the question bank</button>
+  <p class="small muted" style="margin:0">Smart mix serves questions due for review first, then new ones, with your weakest seen questions mixed in. A right answer pushes a question further out (1, 3, 7, 16, 35, 75 days). A miss brings it back tomorrow and once more at the end of the session.</p>`;
+}
+bind.practice=()=>{const v=$("#view");
+  [["seg-topic","topic"],["seg-mode","mode"],["seg-n","n"],["seg-src","src"]].forEach(([id,k])=>v.querySelectorAll("#"+id+" button").forEach(b=>b.onclick=()=>{pset[k]=k==="n"?+b.dataset.v:b.dataset.v;render()}));
+  v.querySelector('[data-act="start"]').onclick=()=>startSession({...pset});
+  v.querySelector('[data-act="search"]').onclick=()=>go("search",{q:""});
+};
+function qBlock(q,chosen,reveal,opts){
+  opts=opts||{};
+  const L3="ABC";
+  return `<div class="stack" style="gap:14px">
+   <div class="row" style="gap:6px">${ident(q.topic)}${srcOf(q)!=="original"?`<span class="chip off">${SRC[srcOf(q)]}</span>`:""}${q.status==="outdated"?`<span class="chip" style="background:var(--warn-soft);color:var(--warn);font-family:var(--f-body);font-weight:600" title="${esc(q.note||"")}">Rule changed since</span>`:""}${(q.acs||[]).map(c=>`<span class="chip" title="${esc(ACS[c]||"")}">${esc(c)}</span>`).join("")}</div>
+   <div class="stem">${esc(q.stem)}</div>
+   ${q.image?`<img src="${esc(q.image)}" alt="Image for this question" style="width:220px;max-width:100%;border-radius:6px;border:1px solid var(--line);background:#fff">`:""}
+   ${q.figures&&q.figures.length?`<div class="row" style="gap:6px">${figChips(q.figures)}</div>`:""}
+   <div class="opts" role="group" aria-label="Answers">${q.options.map((o,i)=>{let c="";if(reveal){if(i===q.answer)c="right";else if(i===chosen)c="wrong"}else if(i===chosen)c="sel";return `<button class="opt ${c}" data-opt="${i}" ${reveal&&!opts.live?"disabled":""}><span class="k">${L3[i]}</span><span>${esc(o)}</span></button>`}).join("")}</div>
+   ${reveal?`<div class="explain ${chosen===q.answer?"":"bad"}"><h4 style="color:${chosen===q.answer?"var(--good)":"var(--bad)"}">${chosen===q.answer?"Correct":chosen==null?"Answer: "+L3[q.answer]:"Not quite. Answer: "+L3[q.answer]}</h4><div>${esc(q.explanation)}</div><div class="small muted">Reference: ${esc(q.ref)}${q.acs&&q.acs[0]&&ACS[q.acs[0]]?` &middot; ${esc(q.acs[0])} ${esc(ACS[q.acs[0]])}`:""}</div>${q.lesson&&LI[q.lesson]&&!opts.noLesson?`<button class="btn ghost" data-lessonlink="${q.lesson}" style="align-self:flex-start;padding-left:0;color:var(--blue)">Study: ${esc(LI[q.lesson].title)} &#8250;</button>`:""}</div>`:""}
+  </div>`;
+}
+function vSession(){
+  const s=route, q=QI[s.ids[s.i]];
+  const a=s.ans[s.i];
+  const done=Object.keys(s.ans).length;
+  return topbar("",true)+`
+  <div class="qhead"><span class="eyebrow num">${esc(s.title)} &middot; ${s.i+1} of ${s.ids.length}</span><button class="flag ${P.flags[q.id]?"on":""}" data-act="flag">${P.flags[q.id]?ICON.flagOn:ICON.flag}${P.flags[q.id]?"Flagged":"Flag"}</button></div>
+  <div class="progress"><b style="width:${pct(done,s.ids.length)}%"></b></div>
+  <section class="card">${qBlock(q,a,a!=null)}</section>
+  ${a!=null?`<div class="sticky-cta"><button class="btn primary wide" data-act="next">${s.i+1<s.ids.length?"Next question":"See results"}</button></div>`:""}`;
+}
+bind.session=()=>{const v=$("#view"),s=route,q=QI[s.ids[s.i]];
+  v.querySelectorAll("[data-opt]").forEach(b=>b.onclick=()=>{if(s.ans[s.i]!=null)return;const c=+b.dataset.opt;s.ans[s.i]=c;const ok=c===q.answer;record(q.id,ok);
+    if(!ok&&!s.requeued[q.id]){s.requeued[q.id]=1;s.ids.push(q.id)}
+    save();render();const ex=v.querySelector(".explain");if(ex)ex.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"nearest"})});
+  const n=v.querySelector('[data-act="next"]');if(n)n.onclick=()=>{if(s.i+1<s.ids.length){s.i++;render();window.scrollTo(0,0)}else go("results",{s},true)};
+  v.querySelector('[data-act="flag"]').onclick=()=>{if(P.flags[q.id])delete P.flags[q.id];else P.flags[q.id]=1;save();render()};
+  v.querySelectorAll("[data-lessonlink]").forEach(b=>b.onclick=()=>go("lesson",{id:b.dataset.lessonlink}));
+};
+function vResults(){
+  const s=route.s;const firstSeen={};const items=[];
+  s.ids.forEach((id,i)=>{if(firstSeen[id]==null){firstSeen[id]=i;items.push({id,c:s.ans[i]})}});
+  const right=items.filter(x=>x.c===QI[x.id].answer).length, wrong=items.filter(x=>x.c!==QI[x.id].answer);
+  const sc=pct(right,items.length);
+  return topbar(`<div class="eyebrow">${esc(s.title)}</div><h1 class="h1">Session done</h1>`,true)+
+  `<section class="card row" style="justify-content:space-between"><div><div class="verdict ${sc>=PASS?"pass":"fail"}">${sc}%</div><div class="muted num">${right} of ${items.length} right on first try</div></div><div class="stack" style="gap:8px"><button class="btn primary" data-act="again" ${wrong.length?"":"disabled"}>Redo the ${wrong.length} missed</button><button class="btn" data-act="more">Another session</button></div></section>
+  ${wrong.length?`<section class="card"><h2 class="h2" style="margin-bottom:6px">Review misses</h2>${wrong.map(x=>{const q=QI[x.id];return `<details style="border-bottom:1px solid var(--line);padding:12px 0"><summary style="cursor:pointer;font-weight:600">${esc(q.stem.length>120?q.stem.slice(0,118)+"...":q.stem)}</summary><div style="padding-top:12px">${qBlock(q,x.c,true)}</div></details>`}).join("")}</section>`:""}`;
+}
+bind.results=()=>{const v=$("#view"),s=route.s;
+  const firstSeen={},wrong=[];s.ids.forEach((id,i)=>{if(firstSeen[id]==null){firstSeen[id]=1;if(s.ans[i]!==QI[id].answer)wrong.push(id)}});
+  v.querySelector('[data-act="again"]').onclick=()=>startSession({mode:"ids",ids:wrong,n:wrong.length,title:"Missed questions"});
+  v.querySelector('[data-act="more"]').onclick=()=>{hist=[];go("practice",{},true)};
+  v.querySelectorAll("[data-lessonlink]").forEach(b=>b.onclick=()=>go("lesson",{id:b.dataset.lessonlink}));
+};
+function vSearch(){
+  const term=(route.q||"").trim().toLowerCase();
+  let hits=[];if(term.length>=2){const ws=term.split(/\s+/);hits=Q.filter(q=>{const t=(q.stem+" "+q.options.join(" ")+" "+q.ref+" "+(q.acs||[]).join(" ")+" "+q.id).toLowerCase();return ws.every(w=>t.includes(w))}).slice(0,60)}
+  return topbar(`<h1 class="h1">Search</h1>`,true)+`<input type="search" id="sq" placeholder="Try: night currency, METAR, Figure 25, 91.155" value="${esc(route.q||"")}" autocomplete="off">
+  <div class="small muted">${term.length<2?"Type at least two letters.":hits.length+" matches"+(hits.length===60?" (first 60 shown)":"")}</div>
+  ${hits.length?`<div class="row"><button class="btn primary" data-act="practhits">Practice these ${hits.length}</button></div>`:""}
+  <section class="card" ${hits.length?"":"hidden"}>${hits.map(q=>`<details style="border-bottom:1px solid var(--line);padding:12px 0"><summary style="cursor:pointer"><span class="chip">${esc(q.id)}</span> ${esc(q.stem)}</summary><div style="padding-top:12px">${qBlock(q,null,true)}</div></details>`).join("")}</section>`;
+}
+bind.search=()=>{const v=$("#view"),i=v.querySelector("#sq");i.focus();i.setSelectionRange(i.value.length,i.value.length);
+  let t;i.oninput=()=>{clearTimeout(t);t=setTimeout(()=>{route.q=i.value;render()},250)};
+  const p=v.querySelector('[data-act="practhits"]');if(p)p.onclick=()=>{const term=route.q.trim().toLowerCase().split(/\s+/);const ids=Q.filter(q=>{const s=(q.stem+" "+q.options.join(" ")+" "+q.ref+" "+(q.acs||[]).join(" ")+" "+q.id).toLowerCase();return term.every(w=>s.includes(w))}).slice(0,60).map(q=>q.id);startSession({mode:"ids",ids,n:ids.length,title:"Search: "+route.q})};
+  v.querySelectorAll("[data-lessonlink]").forEach(b=>b.onclick=()=>go("lesson",{id:b.dataset.lessonlink}));
+};
+
+/* Exam */
+function examPool(){return Q.filter(q=>EXAMT.some(t=>t.id===q.topic)&&(P.examOriginals||srcOf(q)!=="original"))}
+function buildExam(){
+  const ids=[],pool=examPool();
+  EXAMT.forEach(t=>{ids.push(...shuffle(pool.filter(q=>q.topic===t.id)).slice(0,t.exam).map(q=>q.id))});
+  const rest=shuffle(pool.filter(q=>!ids.includes(q.id)));
+  while(ids.length<EXAM_N&&rest.length)ids.push(rest.pop().id);
+  return shuffle(ids).slice(0,EXAM_N);
+}
+function vExam(){
+  return topbar(`<div class="eyebrow">Airman knowledge test simulation</div><h1 class="h1">Practice exam</h1>`)+
+  `<section class="card stack" style="gap:12px">
+   <div class="stats"><div class="stat"><b>60</b><span>questions</span></div><div class="stat"><b>2:30</b><span>hours allowed</span></div><div class="stat"><b>70%</b><span>to pass (42 right)</span></div><div class="stat"><b>${P.exams.length}</b><span>taken so far</span></div></div>
+   <p style="margin:0">Questions are drawn across all ten test areas in roughly the proportions of the real PAR test, from the real FAA bank by default. No feedback until you submit. Flag anything you want to revisit, then review and submit. Your results come back in the format of the FAA Airman Knowledge Test Report, listing the ACS codes you missed.</p>
+   <label class="row" style="gap:10px;cursor:pointer;flex-wrap:nowrap"><input type="checkbox" id="examorig" ${P.examOriginals?"checked":""} style="width:20px;height:20px"><span>Also draw from original questions <span class="muted small">(off: real FAA bank and sample questions only, ${examPool().length} available)</span></span></label>
+   <p class="small muted" style="margin:0">Keep the figure viewer handy: on the real test you get the printed FAA-CT-8080-2H supplement, plus a plotter and an E6B or approved calculator.</p>
+   <button class="btn primary wide" data-act="begin">${P.activeExam?"Resume exam in progress":"Begin exam"}</button>
+   ${P.activeExam?`<button class="btn ghost" data-act="abandon" style="color:var(--bad)">Discard the exam in progress</button>`:""}
+  </section>`;
+}
+bind.exam=()=>{const v=$("#view");const eo=v.querySelector("#examorig");if(eo)eo.onchange=()=>{P.examOriginals=eo.checked;save();render()};v.querySelector('[data-act="begin"]').onclick=()=>{if(!P.activeExam){P.activeExam={ids:buildExam(),ans:{},flags:{},i:0,start:Date.now()};save()}go("examrun",{},true)};
+  const a=v.querySelector('[data-act="abandon"]');if(a)a.onclick=()=>{P.activeExam=null;save();render()}};
+function remaining(){return Math.max(0,EXAM_MIN*60000-(Date.now()-P.activeExam.start))}
+function fmt(ms){const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return `${h}:${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`}
+function vExamRun(){
+  const E=P.activeExam;if(!E)return vExam();
+  const q=QI[E.ids[E.i]], answered=Object.keys(E.ans).length;
+  return `<div class="topbar"><span class="timer ${remaining()<600000?"low":""}" id="timer">${fmt(remaining())}</span><div class="sp"></div><span class="eyebrow num">${answered} of ${E.ids.length} answered</span></div>
+  <div class="qhead"><span class="h2 num">Question ${E.i+1}</span><button class="flag ${E.flags[E.i]?"on":""}" data-act="flag">${E.flags[E.i]?ICON.flagOn:ICON.flag}${E.flags[E.i]?"Marked for review":"Mark for review"}</button></div>
+  <section class="card">${qBlock(q,E.ans[E.i],false)}</section>
+  <div class="grid2"><button class="btn" data-act="prev" ${E.i?"":"disabled"}>Previous</button><button class="btn primary" data-act="nextq">${E.i+1<E.ids.length?"Next":"Review and submit"}</button></div>
+  <section class="card stack"><span class="lbl">Jump to question</span><div class="navgrid">${E.ids.map((_,i)=>`<button data-j="${i}" class="${E.ans[i]!=null?"ans":""} ${E.flags[i]?"flg":""} ${i===E.i?"cur":""}" aria-label="Question ${i+1}">${i+1}</button>`).join("")}</div>
+  <div id="submitbox"><button class="btn wide" data-act="submit">Submit exam</button></div></section>`;
+}
+bind.examrun=()=>{const E=P.activeExam;if(!E)return;const v=$("#view");
+  examTick=setInterval(()=>{const t=$("#timer");if(!t){clearInterval(examTick);return}const r=remaining();t.textContent=fmt(r);t.classList.toggle("low",r<600000);if(r<=0){clearInterval(examTick);finishExam()}},1000);
+  v.querySelectorAll("[data-opt]").forEach(b=>b.onclick=()=>{E.ans[E.i]=+b.dataset.opt;save();render()});
+  v.querySelector('[data-act="flag"]').onclick=()=>{if(E.flags[E.i])delete E.flags[E.i];else E.flags[E.i]=1;save();render()};
+  v.querySelector('[data-act="prev"]').onclick=()=>{E.i--;save();render();window.scrollTo(0,0)};
+  v.querySelector('[data-act="nextq"]').onclick=()=>{if(E.i+1<E.ids.length){E.i++;save();render();window.scrollTo(0,0)}else{$("#submitbox").scrollIntoView({block:"center"});askSubmit()}};
+  v.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{E.i=+b.dataset.j;save();render();window.scrollTo(0,0)});
+  v.querySelector('[data-act="submit"]').onclick=askSubmit;
+};
+function askSubmit(){const E=P.activeExam,un=E.ids.length-Object.keys(E.ans).length,fl=Object.keys(E.flags).length;
+  $("#submitbox").innerHTML=`<div class="confirm" style="border-color:var(--blue);background:var(--blue-soft)"><b>Submit now?</b><span class="small">${un?un+" unanswered (they count as wrong). ":"All questions answered. "}${fl?fl+" marked for review.":""}</span><div class="row"><button class="btn" id="keep">Keep working</button><button class="btn primary" id="dosub">Submit</button></div></div>`;
+  $("#keep").onclick=()=>render();$("#dosub").onclick=finishExam;}
+function finishExam(){
+  const E=P.activeExam;if(!E)return;
+  let correct=0;const missed=new Set(),byT={};
+  E.ids.forEach((id,i)=>{const q=QI[id],ok=E.ans[i]===q.answer;if(ok)correct++;else(q.acs||[]).slice(0,1).forEach(c=>missed.add(c));byT[q.topic]=byT[q.topic]||[0,0];byT[q.topic][1]++;if(ok)byT[q.topic][0]++;if(E.ans[i]!=null)record(id,ok)});
+  const ex={id:"x"+Date.now(),at:Date.now(),n:E.ids.length,correct,score:pct(correct,E.ids.length),secs:Math.round((Date.now()-E.start)/1000),ids:E.ids,ans:E.ids.map((_,i)=>E.ans[i]==null?-1:E.ans[i]),missed:[...missed].sort(),byT};
+  P.exams.push(ex);if(P.exams.length>40)P.exams=P.exams.slice(-40);P.activeExam=null;save();
+  hist=[];go("examresult",{id:ex.id},true);
+}
+function vExamResult(){
+  const e=P.exams.find(x=>x.id===route.id);if(!e)return topbar("",true)+`<div class="empty">Exam not found.</div>`;
+  const pass=e.score>=PASS;
+  return topbar(`<div class="eyebrow">Airman knowledge test report &middot; practice</div><h1 class="h1">${new Date(e.at).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</h1>`,true)+
+  `<section class="card row" style="justify-content:space-between;align-items:flex-end"><div><div class="verdict ${pass?"pass":"fail"}">${e.score}% ${pass?"PASS":"FAIL"}</div><div class="muted num">${e.correct} of ${e.n} correct &middot; ${Math.floor(e.secs/60)} min used of 150</div></div><button class="btn primary" data-act="drillmiss" ${e.correct<e.n?"":"disabled"}>Drill the ${e.n-e.correct} missed</button></section>
+  <section class="card"><h2 class="h2" style="margin-bottom:10px">By area</h2>${TOPICS.filter(t=>e.byT[t.id]).map(t=>{const[a,b]=e.byT[t.id];return `<div class="row" style="flex-wrap:nowrap;padding:6px 0">${ident(t.id)}<div class="bar" style="flex:1"><b class="m" style="width:${pct(a,b)}%"></b></div><span class="num small" style="min-width:44px;text-align:right">${a}/${b}</span></div>`}).join("")}</section>
+  ${e.missed.length?`<section class="card"><h2 class="h2">ACS codes missed</h2><p class="small muted">As on the real report: look these up in the Private Pilot ACS and review the matching lessons.</p><div class="tbl" style="margin:0"><table class="report"><tbody>${e.missed.map(c=>`<tr><td><b>${esc(c)}</b></td><td style="font-family:var(--f-body)">${esc(ACS[c]||"")}</td></tr>`).join("")}</tbody></table></div></section>`:""}
+  <section class="card stack"><h2 class="h2">Answer review</h2><div class="navgrid">${e.ids.map((id,i)=>`<button data-rv="${i}" class="${e.ans[i]===QI[id].answer?"ok":"no"} ${route.rv===i?"cur":""}">${i+1}</button>`).join("")}</div>
+  ${route.rv!=null&&QI[e.ids[route.rv]]?`<div style="border-top:1px solid var(--line);padding-top:14px">${qBlock(QI[e.ids[route.rv]],e.ans[route.rv]<0?null:e.ans[route.rv],true)}</div>`:`<p class="small muted" style="margin:0">Tap a number to see the question, your answer and the explanation.</p>`}</section>`;
+}
+bind.examresult=()=>{const v=$("#view"),e=P.exams.find(x=>x.id===route.id);if(!e)return;
+  v.querySelector('[data-act="drillmiss"]').onclick=()=>{const ids=e.ids.filter((id,i)=>e.ans[i]!==QI[id].answer);startSession({mode:"ids",ids,n:ids.length,title:"Exam misses"})};
+  v.querySelectorAll("[data-rv]").forEach(b=>b.onclick=()=>{route.rv=+b.dataset.rv;render();const el=v.querySelector(".stem");if(el)el.scrollIntoView({block:"start"})});
+  v.querySelectorAll("[data-lessonlink]").forEach(b=>b.onclick=()=>go("lesson",{id:b.dataset.lessonlink}));
+};
+
+/* Figures */
+let figFilter="all";
+function vFigs(){
+  const groups=[["all","All"],["charts","Sectionals"],["wx","Weather"],["perf","Performance and W&B"],["inst","Instruments"],["apt","Airport and supplement"],["legend","Legends"]];
+  const cls=f=>{const t=f.title.toLowerCase();if(f.id.startsWith("legend"))return"legend";if(t.includes("sectional")||t.includes("vor")||t.includes("wind triangle")||t.includes("time conversion"))return"charts";if(/metar|taf|weather|aloft|pilot weather|sigwx|briefing/.test(t))return"wx";if(/weight|balance|performance|takeoff|landing|crosswind|density|power|load factor|velocity/.test(t))return"perf";if(/altimeter|airspeed|turn coord|heading|attitude|compass|lift vector/.test(t))return"inst";return"apt"};
+  const list=F.filter(f=>figFilter==="all"||cls(f)===figFilter);
+  return topbar(`<div class="eyebrow">FAA-CT-8080-2H testing supplement</div><h1 class="h1">Figures</h1><p class="muted" style="margin:0">The same book you get at the testing center. Pinch or scroll to zoom, drag to pan.</p>`)+
+  `<div class="seg" id="seg-fig">${groups.map(([k,l])=>`<button data-v="${k}" aria-pressed="${figFilter===k}">${l}</button>`).join("")}</div>
+  <div class="figgrid">${list.map(f=>{const n=Q.filter(q=>(q.figures||[]).includes(f.id)).length;return `<button class="figcard" data-fig="${f.id}"><img loading="lazy" alt="" src="${esc(f.thumb||f.file)}"><div><b>${esc(f.label)}</b>${esc(f.title)}<br><span class="muted">${n} questions</span></div></button>`}).join("")}</div>`;
+}
+bind.figs=()=>$("#view").querySelectorAll("#seg-fig button").forEach(b=>b.onclick=()=>{figFilter=b.dataset.v;render()});
+
+/* Zoomable figure viewer */
+function openFig(id){
+  const f=FI[id];if(!f)return;
+  const qs=Q.filter(q=>(q.figures||[]).includes(id));
+  const o=$("#overlay");
+  o.innerHTML=`<div class="viewer" role="dialog" aria-modal="true" aria-label="${esc(f.label)}">
+   <div class="vbar"><b>${esc(f.label)} &middot; ${esc(f.title)}</b><button class="vbtn" id="zout" aria-label="Zoom out">&minus;</button><button class="vbtn" id="zin" aria-label="Zoom in">+</button><button class="vbtn" id="zfit" aria-label="Fit" style="font-size:13px;font-weight:700">FIT</button><button class="vbtn" id="zx" aria-label="Close">&times;</button></div>
+   <div class="stage" id="stage"><img id="zimg" alt="${esc(f.label)}" src="${esc(f.file)}" draggable="false"></div>
+   <div class="vhint">${qs.length&&route.name!=="session"&&route.name!=="examrun"?`<button class="btn" id="figprac" style="color:#E4EAF1;background:#142033;border-color:#3A4A60;min-height:36px;padding:6px 14px">Practice ${qs.length} questions on this figure</button>`:"Pinch or scroll to zoom &middot; drag to pan &middot; double tap to zoom in"}</div></div>`;
+  const st=$("#stage"),img=$("#zimg");let s=1,x=0,y=0,base=1;const pts=new Map();let pinch=null,last=null,lastTap=0;
+  const apply=()=>{img.style.transform=`translate(${x}px,${y}px) scale(${s*base})`};
+  const fit=()=>{const cw=st.clientWidth,ch=st.clientHeight,nw=img.naturalWidth||1,nh=img.naturalHeight||1;base=Math.min(cw/nw,ch/nh);s=1;x=(cw-nw*base)/2;y=Math.max(0,(ch-nh*base)/2);apply()};
+  const zoomAt=(ns,cx,cy)=>{ns=Math.max(1,Math.min(ns,10));const k=ns/s;x=cx-(cx-x)*k;y=cy-(cy-y)*k;s=ns;apply()};
+  if(img.complete)fit();else img.onload=fit;
+  const rect=()=>st.getBoundingClientRect();
+  st.addEventListener("wheel",e=>{e.preventDefault();const r=rect();zoomAt(s*Math.exp(-e.deltaY*0.0018),e.clientX-r.left,e.clientY-r.top)},{passive:false});
+  st.addEventListener("pointerdown",e=>{st.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===2){const[a,b]=[...pts.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),s};}else{last={x:e.clientX,y:e.clientY};const now=Date.now();if(now-lastTap<300){const r=rect();zoomAt(s<2?s*2.5:1,e.clientX-r.left,e.clientY-r.top);if(s===1)fit()}lastTap=now}});
+  st.addEventListener("pointermove",e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===2&&pinch){const[a,b]=[...pts.values()];const r=rect();zoomAt(pinch.s*Math.hypot(a.x-b.x,a.y-b.y)/pinch.d,(a.x+b.x)/2-r.left,(a.y+b.y)/2-r.top)}
+    else if(pts.size===1&&last){x+=e.clientX-last.x;y+=e.clientY-last.y;last={x:e.clientX,y:e.clientY};apply()}});
+  const up=e=>{pts.delete(e.pointerId);if(pts.size<2)pinch=null;if(pts.size===1){const p=[...pts.values()][0];last={x:p.x,y:p.y}}else last=null};
+  st.addEventListener("pointerup",up);st.addEventListener("pointercancel",up);
+  $("#zin").onclick=()=>zoomAt(s*1.6,st.clientWidth/2,st.clientHeight/2);
+  $("#zout").onclick=()=>{zoomAt(s/1.6,st.clientWidth/2,st.clientHeight/2);if(s<=1)fit()};
+  $("#zfit").onclick=fit;
+  const close=()=>{o.innerHTML="";document.removeEventListener("keydown",key)};
+  const key=e=>{if(e.key==="Escape")close()};document.addEventListener("keydown",key);
+  $("#zx").onclick=close;$("#zx").focus();
+  const fp=$("#figprac");if(fp)fp.onclick=()=>{close();startSession({mode:"ids",ids:shuffle(qs.map(q=>q.id)),n:qs.length,title:f.label})};
+  window.addEventListener("resize",fit,{once:true});
+}
+
+/* ============ Training tracker ============ */
+const REQS=[
+ {k:"total",label:"Total flight time",need:40,unit:"h",ref:"61.109(a)"},
+ {k:"dual",label:"Dual instruction",need:20,unit:"h",ref:"61.109(a)"},
+ {k:"dualXC",label:"Dual cross country",need:3,unit:"h",ref:"61.109(a)(1)"},
+ {k:"dualNight",label:"Dual night",need:3,unit:"h",ref:"61.109(a)(2)"},
+ {k:"nightXC",label:"Night cross country over 100 nm",need:1,unit:"flight",ref:"61.109(a)(2)(i)"},
+ {k:"nightLdg",label:"Night takeoffs and full stop landings",need:10,unit:"",ref:"61.109(a)(2)(ii)"},
+ {k:"inst",label:"Instrument reference training",need:3,unit:"h",ref:"61.109(a)(3)"},
+ {k:"prep",label:"Checkride prep within 2 calendar months",need:3,unit:"h",ref:"61.109(a)(4)"},
+ {k:"solo",label:"Solo",need:10,unit:"h",ref:"61.109(a)(5)"},
+ {k:"soloXC",label:"Solo cross country",need:5,unit:"h",ref:"61.109(a)(5)(i)"},
+ {k:"longXC",label:"Solo cross country 150 nm, 3 stops, one leg 50 nm",need:1,unit:"flight",ref:"61.109(a)(5)(ii)"},
+ {k:"towered",label:"Solo full stop landings at a towered airport",need:3,unit:"",ref:"61.109(a)(5)(iii)"}
+];
+const num=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
+const r1=n=>Math.round(n*10)/10;
+const money=n=>"$"+Math.round(n).toLocaleString();
+function tset(){return Object.assign({wet:0,cfi:0,targetHours:50,targetDual:30,budget:0,nnumber:"",testDate:"",checkDate:"",writtenScore:""},P.tset||{})}
+function totals(){
+  const t={total:0,dual:0,dualXC:0,dualNight:0,nightXC:0,nightLdg:0,inst:0,prep:0,solo:0,soloXC:0,longXC:0,towered:0,cost:0,acCost:0,cfiCost:0};
+  (P.log||[]).forEach(f=>{const h=num(f.hobbs);t.total+=h;const c=num(f.acCost)+num(f.cfiCost);t.cost+=c;t.acCost+=num(f.acCost);t.cfiCost+=num(f.cfiCost);
+    if(f.kind==="solo"){t.solo+=h;t.soloXC+=num(f.xc);if(f.longXC)t.longXC++;t.towered+=num(f.towered)}
+    else{t.dual+=h;t.dualXC+=num(f.xc);t.dualNight+=num(f.night);t.nightLdg+=num(f.nightLdg);t.inst+=num(f.inst);if(f.nightXC)t.nightXC++;if(f.prep)t.prep+=h}});
+  return t;
+}
+function projection(t,S){
+  const remain=Math.max(0,S.targetHours-t.total), remainDual=Math.max(0,S.targetDual-t.dual);
+  const wet=S.wet||(t.total?t.acCost/t.total:0), cfi=S.cfi||(t.dual?t.cfiCost/t.dual:0);
+  return {remain,remainDual,proj:t.cost+remain*wet+remainDual*cfi,wet,cfi};
+}
+function vTrain(){
+  const S=tset(),t=totals(),pr=projection(t,S),log=(P.log||[]).slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")||b.n-a.n);
+  const flags=[];
+  if(!S.writtenScore&&t.total>=15)flags.push(`Knowledge test not passed yet at ${r1(t.total)} hours. Your plan is to pass it before 20 hours.`);
+  if(t.total>=35&&!S.checkDate)flags.push("Approaching 40 hours without a checkride date. Talk to your CFI about the plan to the practical test.");
+  const rep={};log.forEach(f=>{const k=(f.topic||"").trim().toLowerCase();if(k)rep[k]=(rep[k]||0)+1});
+  Object.entries(rep).filter(([,n])=>n>=3).forEach(([k,n])=>flags.push(`"${k}" has been the lesson topic ${n} times. Find the root cause with your CFI and drill the ground knowledge first.`));
+  if(S.budget&&pr.proj>S.budget)flags.push(`Projected total ${money(pr.proj)} is above your budget of ${money(S.budget)}.`);
+  const gaps=[];log.slice(0,8).forEach(f=>(f.gapLessons||[]).forEach(id=>{if(LI[id]&&!gaps.includes(id))gaps.push(id)}));
+  return topbar(`<div class="eyebrow">Part 61 private pilot${S.nnumber?" &middot; "+esc(S.nnumber):""}</div><h1 class="h1">Training</h1>`)+
+  `<section class="card stack">
+    <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+      <div class="stat"><b class="num">${r1(t.total)}</b><span>hours flown (${r1(t.dual)} dual, ${r1(t.solo)} solo)</span></div>
+      <div class="stat"><b class="num">${money(t.cost)}</b><span>spent${t.total?" &middot; "+money(t.cost/t.total)+" per hour":""}</span></div>
+      <div class="stat"><b class="num">${money(pr.proj)}</b><span>projected at ${S.targetHours} hours</span></div>
+      <div class="stat"><b class="num">${S.writtenScore?esc(S.writtenScore)+"%":"open"}</b><span>knowledge test</span></div>
+    </div>
+    <div class="grid2"><button class="btn primary" data-act="addflight">Log a flight</button><button class="btn" data-act="tsettings">Rates and targets</button></div>
+  </section>
+  ${flags.length?`<section class="callout trap"><h4>Flags</h4><ul>${flags.map(f=>`<li>${esc(f)}</li>`).join("")}</ul></section>`:""}
+  ${gaps.length?`<section class="card stack"><h2 class="h2">Knowledge gaps from recent debriefs</h2><div class="stack" style="gap:6px">${gaps.map(id=>`<button class="list-item" data-lesson="${id}" style="padding:10px 4px"><span>${ident(LI[id].topic)} ${esc(LI[id].title)}</span><span class="muted">&#8250;</span></button>`).join("")}</div></section>`:""}
+  <section class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 class="h2">FAR 61.109 minimums</h2><span class="small muted">the floor, not the target</span></div>
+   ${REQS.map(r=>{const have=t[r.k],ok=have>=r.need;return `<div style="padding:9px 0;border-bottom:1px solid var(--line)"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;gap:8px"><span style="font-weight:600;min-width:0">${ok?'<span style="color:var(--good)">&#10003;</span> ':""}${esc(r.label)}</span><span class="num small" style="white-space:nowrap">${r.unit==="h"?r1(have):have} / ${r.need}${r.unit==="h"?" h":""}</span></div><div class="bar" style="margin-top:6px"><b class="${ok?"m":""}" style="width:${Math.min(100,pct(have,r.need))}%"></b></div><div class="small muted" style="margin-top:3px">14 CFR ${r.ref}</div></div>`}).join("")}
+  </section>
+  <section class="card"><h2 class="h2" style="margin-bottom:6px">Flight log</h2>${log.length?log.map(f=>`<button class="list-item" data-flight="${f.id}"><div style="min-width:0"><div style="font-weight:600">${esc(f.date||"")} &middot; ${f.lesson?"Lesson "+esc(f.lesson)+" &middot; ":""}${esc(f.topic||"Flight")}</div><div class="small muted num">${r1(num(f.hobbs))} h ${f.kind==="solo"?"solo":"dual"}${num(f.xc)?" &middot; "+r1(num(f.xc))+" XC":""}${num(f.night)?" &middot; "+r1(num(f.night))+" night":""} &middot; ${money(num(f.acCost)+num(f.cfiCost))}</div></div><span class="muted" aria-hidden="true">&#8250;</span></button>`).join(""):`<div class="empty">No flights logged yet. Log each lesson right after landing, then write the debrief within 24 hours while it is fresh.</div>`}</section>`;
+}
+bind.train=()=>{const v=$("#view");
+  v.querySelector('[data-act="addflight"]').onclick=()=>go("flight",{id:null});
+  v.querySelector('[data-act="tsettings"]').onclick=()=>go("tsettings");
+  v.querySelectorAll("[data-flight]").forEach(b=>b.onclick=()=>go("flight",{id:b.dataset.flight}));
+  v.querySelectorAll("[data-lesson]").forEach(b=>b.onclick=()=>go("lesson",{id:b.dataset.lesson}));
+};
+function fld(id,label,val,type,extra){return `<label class="stack" style="gap:6px" for="${id}"><span class="lbl">${label}</span><input id="${id}" type="${type||"text"}" value="${esc(val==null?"":val)}" ${extra||""} style="font:inherit;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);width:100%"></label>`}
+function area(id,label,val,ph){return `<label class="stack" style="gap:6px" for="${id}"><span class="lbl">${label}</span><textarea id="${id}" rows="3" placeholder="${esc(ph||"")}" style="font:inherit;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);width:100%;resize:vertical">${esc(val||"")}</textarea></label>`}
+function chk(id,label,on){return `<label class="row" for="${id}" style="gap:10px;flex-wrap:nowrap;cursor:pointer"><input type="checkbox" id="${id}" ${on?"checked":""} style="width:20px;height:20px;flex:none"><span>${label}</span></label>`}
+function vFlight(){
+  const S=tset();const f=(P.log||[]).find(x=>x.id===route.id)||{kind:"dual",date:new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10),lesson:String((P.log||[]).length+1),gapLessons:[]};
+  const isNew=!route.id;
+  const lessonOpts=L.map(l=>`<option value="${l.id}" ${(f.gapLessons||[]).includes(l.id)?"selected":""}>${esc((TOPIC[l.topic]||{}).code||"")} ${esc(l.title)}</option>`).join("");
+  return topbar(`<div class="eyebrow">${isNew?"New entry":"Edit entry"}</div><h1 class="h1">${isNew?"Log a flight":esc(f.date)+" flight"}</h1>`,true)+
+  `<form id="flightform" class="stack" style="gap:16px" novalidate>
+  <section class="card stack" style="gap:12px">
+   <div class="grid2">${fld("f-date","Date",f.date,"date")}${fld("f-lesson","Lesson number",f.lesson,"text")}</div>
+   ${fld("f-topic","Main topic or maneuvers",f.topic,"text",'placeholder="Steep turns, slow flight, pattern work"')}
+   <div class="stack" style="gap:8px"><span class="lbl">Type</span><div class="seg" id="f-kind">${[["dual","Dual"],["solo","Solo"]].map(([k,l])=>`<button type="button" data-v="${k}" aria-pressed="${(f.kind||"dual")===k}">${l}</button>`).join("")}</div></div>
+   <div class="grid2">${fld("f-hobbs","Hobbs hours",f.hobbs,"number",'step="0.1" min="0" inputmode="decimal"')}${fld("f-xc","Cross country hours",f.xc,"number",'step="0.1" min="0" inputmode="decimal"')}</div>
+   <div class="grid2">${fld("f-night","Night hours",f.night,"number",'step="0.1" min="0" inputmode="decimal"')}${fld("f-inst","Instrument reference hours",f.inst,"number",'step="0.1" min="0" inputmode="decimal"')}</div>
+   <div class="grid2">${fld("f-nightLdg","Night full stop landings",f.nightLdg,"number",'step="1" min="0" inputmode="numeric"')}${fld("f-towered","Full stop landings, towered airport",f.towered,"number",'step="1" min="0" inputmode="numeric"')}</div>
+   ${chk("f-nightXC","Night cross country over 100 nm total (dual)",f.nightXC)}
+   ${chk("f-longXC","Solo cross country of 150 nm, 3 full stop points, one leg over 50 nm",f.longXC)}
+   ${chk("f-prep","Checkride preparation flight (dual, within 2 calendar months of the test)",f.prep)}
+   <div class="grid2">${fld("f-acCost","Aircraft cost ($)",f.acCost!=null?f.acCost:(S.wet&&f.hobbs?r1(S.wet*num(f.hobbs)):""),"number",'step="1" min="0" inputmode="decimal"')}${fld("f-cfiCost","Instructor cost ($)",f.cfiCost,"number",'step="1" min="0" inputmode="decimal"')}</div>
+  </section>
+  <section class="card stack" style="gap:12px">
+   <h2 class="h2">Debrief</h2><p class="small muted" style="margin:0">Write it within 24 hours. Be specific: "steep turns, lost 150 ft on the left turn" beats "steep turns need work".</p>
+   ${area("f-obj","Lesson objective",f.obj,"What skill was introduced or practiced?")}
+   ${area("f-met","Met ACS standards",f.met,"Maneuvers within tolerance")}
+   ${area("f-notmet","Did not meet ACS standards",f.notmet,"Maneuver, what went wrong, by how much")}
+   ${area("f-cause","Root cause",f.cause,"Fixation, entry, procedure missed, knowledge gap")}
+   ${area("f-cfi","CFI's number one thing to improve",f.cfi)}
+   ${area("f-gaps","Ground knowledge gaps",f.gaps,"Anything you did not know that you should have")}
+   <label class="stack" style="gap:6px" for="f-gapLessons"><span class="lbl">Lessons to study before the next flight</span><select id="f-gapLessons" multiple size="6" style="font:inherit;padding:8px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);width:100%">${lessonOpts}</select><span class="small muted">Hold Ctrl or tap to select several. They show on the Training screen.</span></label>
+   ${area("f-next","Next lesson preparation",f.next)}
+  </section>
+  <div class="grid2"><button type="submit" class="btn primary">${isNew?"Save flight":"Save changes"}</button>${isNew?"":`<button type="button" class="btn ghost" id="f-del" style="color:var(--bad)">Delete entry</button>`}</div>
+  <div id="f-delbox"></div>
+  </form>`;
+}
+bind.flight=()=>{const v=$("#view");let kind=((P.log||[]).find(x=>x.id===route.id)||{}).kind||"dual";
+  v.querySelectorAll("#f-kind button").forEach(b=>b.onclick=()=>{kind=b.dataset.v;v.querySelectorAll("#f-kind button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  $("#flightform").onsubmit=e=>{e.preventDefault();const g=id=>$("#"+id);
+    const hobbs=num(g("f-hobbs").value);if(!hobbs){g("f-hobbs").focus();toast("Enter the Hobbs hours");return}
+    const rec={id:route.id||("f"+Date.now()),n:Date.now(),date:g("f-date").value,lesson:g("f-lesson").value.trim(),topic:g("f-topic").value.trim(),kind,hobbs:r1(hobbs),
+      xc:r1(num(g("f-xc").value)),night:r1(num(g("f-night").value)),inst:r1(num(g("f-inst").value)),nightLdg:Math.round(num(g("f-nightLdg").value)),towered:Math.round(num(g("f-towered").value)),
+      nightXC:g("f-nightXC").checked,longXC:g("f-longXC").checked,prep:g("f-prep").checked,acCost:num(g("f-acCost").value),cfiCost:num(g("f-cfiCost").value),
+      obj:g("f-obj").value,met:g("f-met").value,notmet:g("f-notmet").value,cause:g("f-cause").value,cfi:g("f-cfi").value,gaps:g("f-gaps").value,
+      gapLessons:[...g("f-gapLessons").selectedOptions].map(o=>o.value),next:g("f-next").value};
+    if(rec.xc>rec.hobbs||rec.night>rec.hobbs||rec.inst>rec.hobbs){toast("Category hours cannot exceed the Hobbs time");return}
+    P.log=(P.log||[]).filter(x=>x.id!==rec.id);P.log.push(rec);save();toast("Flight saved");back()};
+  const d=$("#f-del");if(d)d.onclick=()=>{$("#f-delbox").innerHTML=`<div class="confirm"><b>Delete this logbook entry?</b><div class="row"><button type="button" class="btn" id="f-keep">Keep it</button><button type="button" class="btn primary" id="f-yes" style="background:var(--bad);border-color:var(--bad)">Delete</button></div></div>`;$("#f-keep").onclick=()=>$("#f-delbox").innerHTML="";$("#f-yes").onclick=()=>{P.log=P.log.filter(x=>x.id!==route.id);save();toast("Entry deleted");back()}};
+};
+function vTSettings(){const S=tset();
+  return topbar(`<div class="eyebrow">Training</div><h1 class="h1">Rates and targets</h1>`,true)+
+  `<form id="tsform" class="card stack" style="gap:12px" novalidate>
+   ${fld("t-nnumber","Aircraft N number",S.nnumber,"text",'placeholder="N12345"')}
+   <div class="grid2">${fld("t-wet","C152 wet rate per Hobbs hour ($)",S.wet||"","number",'step="1" min="0" inputmode="decimal"')}${fld("t-cfi","Instructor rate per hour ($)",S.cfi||"","number",'step="1" min="0" inputmode="decimal"')}</div>
+   <div class="grid2">${fld("t-target","Target total hours to checkride",S.targetHours,"number",'step="1" min="40"')}${fld("t-targetDual","Expected total dual hours",S.targetDual,"number",'step="1" min="20"')}</div>
+   ${fld("t-budget","Budget ($)",S.budget||"","number",'step="100" min="0" inputmode="decimal"')}
+   <div class="grid2">${fld("t-written","Knowledge test score (%)",S.writtenScore,"number",'step="1" min="0" max="100"')}${fld("t-check","Checkride date",S.checkDate,"date")}</div>
+   <p class="small muted" style="margin:0">Projection: spent so far, plus remaining hours to your target at the wet rate, plus remaining dual hours at the instructor rate. Blank rates use your logged averages.</p>
+   <button type="submit" class="btn primary">Save</button>
+  </form>`;
+}
+bind.tsettings=()=>{$("#tsform").onsubmit=e=>{e.preventDefault();const g=id=>$("#"+id).value;
+  P.tset={nnumber:g("t-nnumber").trim(),wet:num(g("t-wet")),cfi:num(g("t-cfi")),targetHours:Math.max(40,num(g("t-target"))||50),targetDual:Math.max(20,num(g("t-targetDual"))||30),budget:num(g("t-budget")),writtenScore:g("t-written").trim(),checkDate:g("t-check")};
+  save();toast("Saved");back()}};
+
+/* ============ Boot ============ */
+(async function boot(){
+  const loc=readLocal();if(loc)P=norm(loc);
+  try{await loadData()}catch(e){$("#view").innerHTML=`<div class="empty">The question bank did not load (${esc(e.message)}). Reload the page to try again.</div>`;return}
+  if(P.activeExam&&remaining()<=0){finishExam()}
+  render();
+  initCloud();
+})();
+})();
+</script>
+
+</body>
+</html>
